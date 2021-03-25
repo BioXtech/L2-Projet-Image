@@ -70,7 +70,7 @@ int main()
 
 
 
-/*
+
     Image* test = loadImage("base.ppm");
     saveImage(test,"test.ppm");
     redChannel("base.ppm");
@@ -78,7 +78,7 @@ int main()
     blueChannel("base.ppm");
     greyAverage("base.ppm");
     greyMax("base.ppm");
-    sepia("base.ppm");*/
+    sepia("base.ppm");
 
     destructImage(image1);
     destructImage(imageAModifier);

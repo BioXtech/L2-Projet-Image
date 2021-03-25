@@ -65,9 +65,9 @@ Image* loadImage(char nomFichier[])
     printf("Execution loadImage()\n");
 
     FILE *image = fopen(nomFichier,"r");
-    char headerParam[3];
+    char headerParam[5];
     int x,y,colorDepth;
-    Octet r,v,b;
+    int r,v,b;
     Pixel pixel = {0,0,0};
 
     fscanf(image,"%s",headerParam);
@@ -88,7 +88,8 @@ Image* loadImage(char nomFichier[])
             pixel.v = v;
             pixel.b = b;
             imageReturn->image[x][y] = pixel;
-            fprintf(stdout, "%d %d %d ", imageReturn->image[x][y].r,imageReturn->image[x][y].v,imageReturn->image[x][y].b);
+            //fprintf(stdout, "%d %d %d ", imageReturn->image[x][y].r,imageReturn->image[x][y].v,imageReturn->image[x][y].b);
+            fprintf(stdout, "%d %d %d ",r,v,b);
         }
         fprintf(stdout,"\n");
     }
@@ -149,7 +150,7 @@ void blueChannel(char nomFichier[])
 
 void greyAverage(char nomFichier[]){
     Image* image = loadImage(nomFichier);
-    Octet average = 0;
+    int average = 0;
 
     for(int x = 0; x < image->sizeX; x++)
     {
@@ -170,7 +171,7 @@ void greyAverage(char nomFichier[]){
 void greyMax(char nomFichier[]){
     Image* image = loadImage(nomFichier);
     int max = 0;
-    Octet r,v,b;
+    int r,v,b;
 
     for(int x = 0; x < image->sizeX; x++)
     {
@@ -202,7 +203,7 @@ void greyMax(char nomFichier[]){
 
 void sepia(char nomFichier[]){
     Image* image = loadImage(nomFichier);
-    Octet newR,newV,newB;
+    int newR,newV,newB;
 
     for(int x = 0; x < image->sizeX; x++)
     {
