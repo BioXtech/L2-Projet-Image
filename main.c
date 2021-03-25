@@ -1,3 +1,9 @@
+/*
+* Projet de programmation en C
+* Binome constitue de Doan Duc-Thong et Porro Guillaume
+*
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
