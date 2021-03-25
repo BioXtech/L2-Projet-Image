@@ -29,6 +29,8 @@ void blueChannel(char nomFichier[]);
 
 void greyAverage(char nomFichier[]);
 void greyMax(char nomFichier[]);
+
 void sepia(char nomFichier[]);
 
+void negative(char nomFichier[]);
 #endif // IMAGE_H_INCLUDED

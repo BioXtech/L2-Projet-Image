@@ -88,10 +88,7 @@ Image* loadImage(char nomFichier[])
             pixel.v = v;
             pixel.b = b;
             imageReturn->image[x][y] = pixel;
-            //fprintf(stdout, "%d %d %d ", imageReturn->image[x][y].r,imageReturn->image[x][y].v,imageReturn->image[x][y].b);
-            fprintf(stdout, "%d %d %d ",r,v,b);
         }
-        fprintf(stdout,"\n");
     }
 
     return imageReturn;
@@ -232,6 +229,28 @@ void sepia(char nomFichier[]){
     }
 
     saveImage(image, "sepia.ppm");
+    destructImage(image);
+}
+
+void negative(char nomFichier[]){
+    Image* image = loadImage(nomFichier);
+    int newR,newV,newB;
+
+    for(int x = 0; x < image->sizeX; x++)
+    {
+        for(int y = 0; y < image->sizeY; y++)
+        {
+            newR = 255 - image->image[x][y].r;
+            newV = 255 - image->image[x][y].v;
+            newB = 255 - image->image[x][y].b;
+
+            image->image[x][y].r = newR;
+            image->image[x][y].v = newV;
+            image->image[x][y].b = newB;
+        }
+    }
+
+    saveImage(image, "negative.ppm");
     destructImage(image);
 }
 

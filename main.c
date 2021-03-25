@@ -80,6 +80,7 @@ int main()
     greyAverage("base.ppm");
     greyMax("base.ppm");
     sepia("base.ppm");
+    negative("base.ppm");
 
 
     // Liberation de la memoire
