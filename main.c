@@ -11,8 +11,10 @@ int random(int min, int max)
 
 int main()
 {
+    // Initialisation du random
     srand(time (NULL));
 
+    // Initialisation de constante de pixel
     Pixel rouge = {255,0,0};
     Pixel vert = {0,255,0};
     Pixel bleu = {0,0,255};
@@ -21,10 +23,7 @@ int main()
     Image *imageAModifier = createImage(50,50);
     Image *imageChargee = NULL;
 
-    //printf("Tab @ %p\n", &(**image1->image)); //Algebre des pointeurs *(*(arr+i)+j)
-    //printf("Tab @ %p\n", &(image1->image[0][0])); // Notation avec []
-    // Les deux sont egaux
-
+    // Creation d'une image avec des pixels bleus, rouges ou verts
     for(int x = 0; x < image1->sizeX; x++)
     {
         for(int y = 0; y < image1->sizeY; y++)
@@ -45,12 +44,12 @@ int main()
                     image1->image[x][y] = bleu;
                     break;
             }
-
-            //printf("Val [%d][%d]", x,y);
         }
     }
     saveImage(image1,"test.ppm");
 
+
+    // Creation d'une image rouge puis modification en lui rajoutant deux lignes
     for(int x = 0; x < imageAModifier->sizeX; x++)
     {
         for(int y = 0; y < imageAModifier->sizeY; y++)
@@ -59,7 +58,6 @@ int main()
         }
     }
     saveImage(imageAModifier,"avant.ppm");
-
     imageChargee = loadImage("avant.ppm");
     for(int i = 0; i < imageChargee->sizeX; i++)
     {
@@ -69,10 +67,7 @@ int main()
     saveImage(imageChargee,"apres.ppm");
 
 
-
-
-    Image* test = loadImage("base.ppm");
-    saveImage(test,"test.ppm");
+    // Test d'effets sur images
     redChannel("base.ppm");
     greenChannel("base.ppm");
     blueChannel("base.ppm");
@@ -80,10 +75,11 @@ int main()
     greyMax("base.ppm");
     sepia("base.ppm");
 
+
+    // Liberation de la memoire
     destructImage(image1);
     destructImage(imageAModifier);
     destructImage(imageChargee);
-    //destructImage(test);
 
     return 0;
 }
