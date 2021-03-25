@@ -50,3 +50,12 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+*.ppm
+*.save
+TP4images.layout
+TP4images.depend
+TP4images.cbp
+bin/
+obj/
+images/
+
