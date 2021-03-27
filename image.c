@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "image.h"
+#include <float.h>
 
 Image* createImage(int x, int y)
 {
@@ -107,7 +108,7 @@ void redChannel(char nomFichier[])
         }
     }
 
-    saveImage(image, "red.ppm");
+    saveImage(image, "images/red.ppm");
     destructImage(image);
 }
 
@@ -124,7 +125,7 @@ void greenChannel(char nomFichier[])
         }
     }
 
-    saveImage(image, "green.ppm");
+    saveImage(image, "images/green.ppm");
     destructImage(image);
 }
 
@@ -141,11 +142,12 @@ void blueChannel(char nomFichier[])
         }
     }
 
-    saveImage(image, "blue.ppm");
+    saveImage(image, "images/blue.ppm");
     destructImage(image);
 }
 
-void greyAverage(char nomFichier[]){
+void greyAverage(char nomFichier[])
+{
     Image* image = loadImage(nomFichier);
     int average = 0;
 
@@ -161,11 +163,12 @@ void greyAverage(char nomFichier[]){
         }
     }
 
-    saveImage(image, "greyAverage.ppm");
+    saveImage(image, "images/greyAverage.ppm");
     destructImage(image);
 }
 
-void greyMax(char nomFichier[]){
+void greyMax(char nomFichier[])
+{
     Image* image = loadImage(nomFichier);
     int max = 0;
     int r,v,b;
@@ -178,13 +181,16 @@ void greyMax(char nomFichier[]){
             v = image->image[x][y].v;
             b = image->image[x][y].b;
 
-            if(r >= v && r >= b){
+            if(r >= v && r >= b)
+            {
                 max = r;
             }
-            else if(v >= r && v >= b){
+            else if(v >= r && v >= b)
+            {
                 max = v;
             }
-            else{
+            else
+            {
                 max = b;
             }
 
@@ -194,11 +200,12 @@ void greyMax(char nomFichier[]){
         }
     }
 
-    saveImage(image, "greyMax.ppm");
+    saveImage(image, "images/greyMax.ppm");
     destructImage(image);
 }
 
-void sepia(char nomFichier[]){
+void sepia(char nomFichier[])
+{
     Image* image = loadImage(nomFichier);
     int newR,newV,newB;
 
@@ -210,15 +217,18 @@ void sepia(char nomFichier[]){
             newV = 0.349*(image->image[x][y].r) + 0.686*(image->image[x][y].v) + 0.168*(image->image[x][y].b);
             newB = 0.272*(image->image[x][y].r) + 0.534*(image->image[x][y].v) + 0.131*(image->image[x][y].b);
 
-            if(newR > 255){
+            if(newR > 255)
+            {
                 newR = 255;
             }
 
-            if(newV > 255){
+            if(newV > 255)
+            {
                 newV = 255;
             }
 
-            if(newB > 255){
+            if(newB > 255)
+            {
                 newB = 255;
             }
 
@@ -228,11 +238,12 @@ void sepia(char nomFichier[]){
         }
     }
 
-    saveImage(image, "sepia.ppm");
+    saveImage(image, "images/sepia.ppm");
     destructImage(image);
 }
 
-void negative(char nomFichier[]){
+void negative(char nomFichier[])
+{
     Image* image = loadImage(nomFichier);
     int newR,newV,newB;
 
@@ -250,7 +261,174 @@ void negative(char nomFichier[]){
         }
     }
 
-    saveImage(image, "negative.ppm");
+    saveImage(image, "images/negative.ppm");
     destructImage(image);
 }
 
+void threshold(char nomFichier[])
+{
+    Image* image = loadImage(nomFichier);
+    int average = 0;
+
+    Pixel noir = {0,0,0}, blanc = {255,255,255};
+
+    for(int x = 0; x < image->sizeX; x++)
+    {
+        for(int y = 0; y < image->sizeY; y++)
+        {
+            average = (image->image[x][y].r + image->image[x][y].v + image->image[x][y].b)/3;
+
+            if(average > 100) //Seuil choisi de facon empirique
+            {
+                image->image[x][y] = blanc;
+            }
+            else
+            {
+                image->image[x][y] = noir;
+            }
+        }
+    }
+
+    saveImage(image, "images/threshold.ppm");
+    destructImage(image);
+}
+
+void thresholdOtsu(char nomFichier[])
+{
+    Image* image = loadImage(nomFichier);
+    int average = 0, i;
+    int histogramme[256];
+    double probaPixel[256];
+    double sum = 0.0;
+
+    Pixel noir = {0,0,0}, blanc = {255,255,255};
+
+    for(i = 0; i <= 255; i++)
+    {
+        histogramme[i] = 0;
+    }
+
+    for(int x = 0; x < image->sizeX; x++)
+    {
+        for(int y = 0; y < image->sizeY; y++)
+        {
+            average = (image->image[x][y].r + image->image[x][y].v + image->image[x][y].b)/3;
+            histogramme[average]++;
+        }
+    }
+
+    int nbPixel = image->sizeX * image->sizeY;
+    printf("%d\n",nbPixel);
+    for(i = 0; i <= 255; i++)
+    {
+        probaPixel[i] = (double)histogramme[i]/nbPixel;
+        sum = sum + probaPixel[i];
+        //Drawing graphics
+        /*for(int j = 0; j < probaPixel[i]*10000; j++){
+            printf("*");
+        }
+        printf("*\n");*/
+        //printf("%3d : %8d | %8f\n", i, histogramme[i],probaPixel[i]*100);
+    }
+    printf("Somme des probas: %f\n", sum*100); //Checking the sum value is near 100
+
+    double omega1, omega2,
+          moyenne1, moyenne2,
+          variance1, variance2;
+    double variances[256];
+    int t,wall;
+    for(t = 0; t <= 255; t++)
+    {
+        omega1 = 0.0;
+        omega2 = 0.0;
+        moyenne1 = 0.0;
+        moyenne2 = 0.0;
+        variance1 = 0.0;
+        variance2 = 0.0;
+
+        printf("Classe %d\n",t);
+        for(wall = 0; wall <= t; wall++)
+        {
+            omega1 += probaPixel[wall];
+        }
+        for(wall = t+1; wall <= 255; wall++)
+        {
+            omega2 += probaPixel[wall];
+        }
+        printf("Omega1: %f, Omega2: %f\n", omega1, omega2);
+
+        for(wall = 0; wall < t; wall++)
+        {
+            moyenne1 += (wall+1)*probaPixel[wall];
+        }
+        for(wall = t; wall <= 255; wall++)
+        {
+            moyenne2 += (wall+1)*probaPixel[wall];
+        }
+
+        printf("%f\n",moyenne1);
+        if(omega1 != 0.0)
+        {
+            moyenne1 = moyenne1/omega1;
+        }
+        if(omega2 != 0)
+        {
+            moyenne2 = moyenne2/omega2;
+        }
+        printf("Moyenne1: %f, Moyenne2: %f\n",moyenne1,moyenne2);
+
+        for(wall = 0; wall <= t; wall++)
+        {
+            variance1 += ((wall - moyenne1)*(wall - moyenne1))* probaPixel[wall];
+        }
+        for(wall = t+1; wall <= 255; wall++)
+        {
+            variance1 += ((wall - moyenne2)*(wall - moyenne2))* probaPixel[wall];
+        }
+
+        if(omega1 != 0.0)
+        {
+            variance1 = variance1/omega1;
+        }
+        if(omega2 != 0)
+        {
+            variance2 = variance2/omega2;
+        }
+
+        variances[t] = variance1 + variance2;
+        printf("Variance1: %f, Variance2: %f\n\n",variance1,variance2);
+    }
+
+    float minVariance = FLT_MAX;
+    int seuil = -1;
+    for(i = 0; i <= 255; i++)
+    {
+        printf("%f\n",variances[i]);
+        if(variances[i]<minVariance)
+        {
+            minVariance = variances[i];
+            seuil = i;
+        }
+    }
+    printf("Seuil: %f pour indice %d\n",minVariance,seuil);
+
+    for(int x = 0; x < image->sizeX; x++)
+    {
+        for(int y = 0; y < image->sizeY; y++)
+        {
+            average = (image->image[x][y].r + image->image[x][y].v + image->image[x][y].b)/3;
+
+            if(average > seuil) //Seuil choisi selon la technique d'Otsu
+            {
+                image->image[x][y] = blanc;
+            }
+            else
+            {
+                image->image[x][y] = noir;
+            }
+        }
+    }
+
+    saveImage(image, "images/thresholdOtsu.ppm");
+    destructImage(image);
+}

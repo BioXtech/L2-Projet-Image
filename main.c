@@ -25,6 +25,7 @@ int main()
     Pixel vert = {0,255,0};
     Pixel bleu = {0,0,255};
 
+    /*
     Image *image1 = createImage(50,50);
     Image *imageAModifier = createImage(50,50);
     Image *imageChargee = NULL;
@@ -52,7 +53,7 @@ int main()
             }
         }
     }
-    saveImage(image1,"test.ppm");
+    saveImage(image1,"images/test.ppm");
 
 
     // Creation d'une image rouge puis modification en lui rajoutant deux lignes
@@ -63,14 +64,14 @@ int main()
             imageAModifier->image[x][y] = rouge;
         }
     }
-    saveImage(imageAModifier,"avant.ppm");
-    imageChargee = loadImage("avant.ppm");
+    saveImage(imageAModifier,"images/avant.ppm");
+    imageChargee = loadImage("images/avant.ppm");
     for(int i = 0; i < imageChargee->sizeX; i++)
     {
         imageChargee->image[5][i] = vert;
         imageChargee->image[i][5] = bleu;
     }
-    saveImage(imageChargee,"apres.ppm");
+    saveImage(imageChargee,"images/apres.ppm");
 
 
     // Test d'effets sur images
@@ -81,12 +82,15 @@ int main()
     greyMax("base.ppm");
     sepia("base.ppm");
     negative("base.ppm");
-
+    threshold("base.ppm");*/
+    thresholdOtsu("base.ppm");
 
     // Liberation de la memoire
+    /*
     destructImage(image1);
     destructImage(imageAModifier);
     destructImage(imageChargee);
+    */
 
     return 0;
 }
