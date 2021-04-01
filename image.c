@@ -318,7 +318,7 @@ void thresholdOtsu(char nomFichier[])
     }
 
     int nbPixel = image->sizeX * image->sizeY;
-    printf("%d\n",nbPixel);
+    //printf("%d\n",nbPixel);
     for(i = 0; i <= 255; i++)
     {
         probaPixel[i] = (double)histogramme[i]/nbPixel;
@@ -330,11 +330,11 @@ void thresholdOtsu(char nomFichier[])
         printf("*\n");*/
         //printf("%3d : %8d | %8f\n", i, histogramme[i],probaPixel[i]*100);
     }
-    printf("Somme des probas: %f\n", sum*100); //Checking the sum value is near 100
+    //printf("Somme des probas: %f\n", sum*100); //Checking the sum value is near 100
 
     double omega1, omega2,
-          moyenne1, moyenne2,
-          variance1, variance2;
+           moyenne1, moyenne2,
+           variance1, variance2;
     double variances[256];
     int t,wall;
     for(t = 0; t <= 255; t++)
@@ -346,7 +346,7 @@ void thresholdOtsu(char nomFichier[])
         variance1 = 0.0;
         variance2 = 0.0;
 
-        printf("Classe %d\n",t);
+        //printf("Classe %d\n",t);
         for(wall = 0; wall <= t; wall++)
         {
             omega1 += probaPixel[wall];
@@ -355,7 +355,7 @@ void thresholdOtsu(char nomFichier[])
         {
             omega2 += probaPixel[wall];
         }
-        printf("Omega1: %f, Omega2: %f\n", omega1, omega2);
+        //printf("Omega1: %f, Omega2: %f\n", omega1, omega2);
 
         for(wall = 0; wall < t; wall++)
         {
@@ -366,7 +366,7 @@ void thresholdOtsu(char nomFichier[])
             moyenne2 += (wall+1)*probaPixel[wall];
         }
 
-        printf("%f\n",moyenne1);
+        //printf("%f\n",moyenne1);
         if(omega1 != 0.0)
         {
             moyenne1 = moyenne1/omega1;
@@ -375,7 +375,7 @@ void thresholdOtsu(char nomFichier[])
         {
             moyenne2 = moyenne2/omega2;
         }
-        printf("Moyenne1: %f, Moyenne2: %f\n",moyenne1,moyenne2);
+        //printf("Moyenne1: %f, Moyenne2: %f\n",moyenne1,moyenne2);
 
         for(wall = 0; wall <= t; wall++)
         {
@@ -396,21 +396,21 @@ void thresholdOtsu(char nomFichier[])
         }
 
         variances[t] = variance1 + variance2;
-        printf("Variance1: %f, Variance2: %f\n\n",variance1,variance2);
+        //printf("Variance1: %f, Variance2: %f\n\n",variance1,variance2);
     }
 
     float minVariance = FLT_MAX;
     int seuil = -1;
     for(i = 0; i <= 255; i++)
     {
-        printf("%f\n",variances[i]);
+        //printf("%f\n",variances[i]);
         if(variances[i]<minVariance)
         {
             minVariance = variances[i];
             seuil = i;
         }
     }
-    printf("Seuil: %f pour indice %d\n",minVariance,seuil);
+    //printf("Seuil: %f pour indice %d\n",minVariance,seuil);
 
     for(int x = 0; x < image->sizeX; x++)
     {
@@ -432,3 +432,115 @@ void thresholdOtsu(char nomFichier[])
     saveImage(image, "images/thresholdOtsu.ppm");
     destructImage(image);
 }
+
+void pixelate(char nomFichier[])
+{
+    Image* image = loadImage(nomFichier);
+    Image* newImage = createImage(image->sizeX,image->sizeY);
+    int averageRed, averageGreen, averageBlue;
+
+    Pixel newPixel = {0,0,0};
+    int xIndex,yIndex;
+
+    for(int x = 0; x < image->sizeX; x++)
+    {
+        for(int y = 0; y < image->sizeY; y++)
+        {
+            averageRed = 0;
+            averageGreen = 0;
+            averageBlue = 0;
+
+            for(int i = -1; i <= 1; i++){
+                for(int j = -1; j <= 1; j++){
+
+                    xIndex = (x+i)%image->sizeX;
+                    yIndex = (y+j)%image->sizeY;
+                    if(xIndex < 0){
+                        xIndex = image->sizeX-1;
+                    }
+                    if(yIndex < 0){
+                        yIndex = image->sizeY-1;
+                    }
+                    averageRed += image->image[xIndex][yIndex].r;
+                    averageGreen += image->image[xIndex][yIndex].v;
+                    averageBlue += image->image[xIndex][yIndex].b;
+                }
+            }
+
+            newPixel.r = averageRed/9;
+            newPixel.v = averageGreen/9;
+            newPixel.b = averageBlue/9;
+
+            //printf("%d %d %d | %d %d %d\n",averageRed, averageGreen, averageBlue, newPixel.r, newPixel.v ,newPixel.b);
+
+            newImage->image[x][y] = newPixel;
+        }
+    }
+
+    saveImage(newImage, "images/pixelated.ppm");
+    destructImage(image);
+    destructImage(newImage);
+}
+
+void quintuplage(char nomFichier[])
+{
+    Image* image = loadImage(nomFichier);
+    int averageRed = 0, averageGreen = 0, averageBlue = 0;
+
+    Pixel newPixel = {0,0,0};
+
+    for(int x = 1; x < image->sizeX; x += 3)
+    {
+        for(int y = 1; y < image->sizeY; y += 3)
+        {
+            if(x+1 == image->sizeX || y+1 == image->sizeY) continue;
+            averageRed = ((image->image[x-1][y-1].r+
+                           image->image[x-1][y].r+
+                           image->image[x-1][y+1].r+
+                           image->image[x][y-1].r+
+                           image->image[x][y].r+
+                           image->image[x][y+1].r+
+                           image->image[x+1][y-1].r+
+                           image->image[x+1][y].r+
+                           image->image[x+1][y+1].r)/9);
+
+            averageGreen = ((image->image[x-1][y-1].v+
+                             image->image[x-1][y].v+
+                             image->image[x-1][y+1].v+
+                             image->image[x][y-1].v+
+                             image->image[x][y].v+
+                             image->image[x][y+1].v+
+                             image->image[x+1][y-1].v+
+                             image->image[x+1][y].v+
+                             image->image[x+1][y+1].v)/9);
+
+            averageBlue = ((image->image[x-1][y-1].b+
+                            image->image[x-1][y].b+
+                            image->image[x-1][y+1].b+
+                            image->image[x][y-1].b+
+                            image->image[x][y].b+
+                            image->image[x][y+1].b+
+                            image->image[x+1][y-1].b+
+                            image->image[x+1][y].b+
+                            image->image[x+1][y+1].b)/9);
+
+            newPixel.r = averageRed;
+            newPixel.v = averageGreen;
+            newPixel.b = averageBlue;
+
+            image->image[x-1][y-1] = newPixel;
+            image->image[x-1][y] = newPixel;
+            image->image[x-1][y+1] = newPixel;
+            image->image[x][y-1] = newPixel;
+            image->image[x][y] = newPixel;
+            image->image[x][y+1] = newPixel;
+            image->image[x+1][y-1] = newPixel;
+            image->image[x+1][y] = newPixel;
+            image->image[x+1][y+1] = newPixel;
+        }
+    }
+
+    saveImage(image, "images/quintuple.ppm");
+    destructImage(image);
+}
+

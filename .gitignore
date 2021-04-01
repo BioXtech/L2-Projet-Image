@@ -60,3 +60,6 @@ obj/
 results/
 
 *.png
+*.depend
+*.cbp
+*.layout

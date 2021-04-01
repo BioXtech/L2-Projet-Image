@@ -35,4 +35,7 @@ void sepia(char nomFichier[]);
 void negative(char nomFichier[]);
 void threshold(char nomFichier[]); //Methode artisanale
 void thresholdOtsu(char nomFichier[]); //Methode d'Otsu
+
+void pixelate(char nomFichier[]);
+void quintuplage(char nomFichier[]);
 #endif // IMAGE_H_INCLUDED

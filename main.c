@@ -73,8 +73,9 @@ int main()
     }
     saveImage(imageChargee,"images/apres.ppm");
 
-
+    */
     // Test d'effets sur images
+    /*
     redChannel("base.ppm");
     greenChannel("base.ppm");
     blueChannel("base.ppm");
@@ -82,8 +83,11 @@ int main()
     greyMax("base.ppm");
     sepia("base.ppm");
     negative("base.ppm");
-    threshold("base.ppm");*/
+    threshold("base.ppm");
     thresholdOtsu("base.ppm");
+    */
+    pixelate("base.ppm");
+    //quintuplage("base.ppm");
 
     // Liberation de la memoire
     /*
