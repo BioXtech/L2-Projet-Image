@@ -6,7 +6,8 @@
 
 Image* createImage(int x, int y)
 {
-    if(x <= 0 || y <= 0){
+    if(x <= 0 || y <= 0)
+    {
         printf("Erreur dans les parametres pour creer l'image\n");
         return NULL;
     }
@@ -45,9 +46,9 @@ void saveImage(Image *pxArray, char nomFichier[])
     fprintf(image,"255\n");
 
     //Actual image
-    for(int x = 0; x < pxArray->sizeX; x++)
+    for(int y = 0; y < pxArray->sizeY; y++)
     {
-        for(int y = 0; y < pxArray->sizeY; y++)
+        for(int x = 0; x < pxArray->sizeX; x++)
         {
             fprintf(image, "%d %d %d ", pxArray->image[x][y].r,pxArray->image[x][y].v,pxArray->image[x][y].b);
             //fprintf(stdout, "%d %d %d ", pxArray->image[x][y].r,pxArray->image[x][y].v,pxArray->image[x][y].b);
@@ -70,6 +71,7 @@ Image* loadImage(char nomFichier[])
         perror("Erreur: l'image n'existe pas");
         exit(NULL);
     }
+
     char headerParam[5];
     int x,y,colorDepth;
     int r,v,b;
@@ -84,9 +86,9 @@ Image* loadImage(char nomFichier[])
 
     printf("Name: %s, Type: %s, x: %d, y: %d, Color depth: %d\n",nomFichier,headerParam,imageReturn->sizeX,imageReturn->sizeY,colorDepth);
 
-    for(int x = 0; x < imageReturn->sizeX; x++)
+    for(int y = 0; y < imageReturn->sizeY; y++)
     {
-        for(int y = 0; y < imageReturn->sizeY; y++)
+        for(int x = 0; x < imageReturn->sizeX; x++)
         {
             fscanf(image, "%d %d %d ", &r,&v,&b);
             pixel.r = r;
@@ -444,24 +446,7 @@ void pixelate(char nomFichier[])
     Image *originalImage = loadImage(nomFichier);
     Image *newImage = createImage(originalImage->sizeX,originalImage->sizeY);
 
-    saveImage(originalImage,"images/originalImage.ppm");
-    saveImage(newImage,"images/newImage.ppm");
-    int averageRed=0, averageGreen=0, averageBlue=0;
-
-    /*printf("%d %d\n",originalImage->sizeX,originalImage->sizeY );
-    printf("%p, %p\n", originalImage, newImage);
-    printf("%p, %p\n", originalImage->image,newImage->image);
-    printf("%p, %p\n", originalImage->image[0][0],newImage->image[0][0]);
-    printf("%p, %p\n", originalImage->image[1][1],newImage->image[1][1]);
-    printf("%p, %p\n", originalImage->image[2][2],newImage->image[2][2]);*/
-
-    /*Pixel test = {255,154,98};
-    originalImage->image[1][1] = test;
-    printf("%d %d %d\n", originalImage->image[1][1].r,originalImage->image[1][1].v,originalImage->image[1][1].b);
-    printf("%d %d %d\n", newImage->image[1][1].r,newImage->image[0][0].v,newImage->image[0][0].b);
-    */
-
-    Pixel currentPixel = {255,0,0};
+    Pixel currentPixel = {0,0,0};
     int xIndex=0,yIndex=0;
 
     for(int x = 1; x < originalImage->sizeX; x+=3)
@@ -488,9 +473,7 @@ void pixelate(char nomFichier[])
                     newImage->image[xIndex][yIndex] = currentPixel;
                 }
             }
-            //newImage->image[x][y] = currentPixel;
         }
-        //saveImage(newImage,"images/newImage.ppm");
     }
 
     saveImage(newImage, "images/pixelated.ppm");
@@ -503,21 +486,7 @@ void lowPass(char nomFichier[])
     Image *originalImage = loadImage(nomFichier);
     Image *newImage = createImage(originalImage->sizeX,originalImage->sizeY);
 
-    saveImage(originalImage,"images/originalImage.ppm");
-    saveImage(newImage,"images/newImage.ppm");
     int averageRed, averageGreen, averageBlue;
-
-    printf("%d %d\n",originalImage->sizeX,originalImage->sizeY );
-    printf("%p, %p\n", originalImage, newImage);
-    printf("%p, %p\n", originalImage->image,newImage->image);
-    printf("%p, %p\n", originalImage->image[0][0],newImage->image[0][0]);
-    printf("%p, %p\n", originalImage->image[1][1],newImage->image[1][1]);
-    printf("%p, %p\n", originalImage->image[2][2],newImage->image[2][2]);
-
-    Pixel test = {255,154,98};
-    originalImage->image[1][1] = test;
-    printf("%d %d %d\n", originalImage->image[1][1].r,originalImage->image[1][1].v,originalImage->image[1][1].b);
-    printf("%d %d %d\n", newImage->image[1][1].r,newImage->image[0][0].v,newImage->image[0][0].b);
 
     Pixel newPixel = {0,0,0};
     int xIndex,yIndex;
@@ -562,6 +531,80 @@ void lowPass(char nomFichier[])
     }
 
     saveImage(newImage, "images/lowPass.ppm");
+    destructImage(originalImage);
+    destructImage(newImage);
+}
+
+void highPass(char nomFichier[])
+{
+    Image *originalImage = loadImage(nomFichier);
+    Image *newImage = createImage(originalImage->sizeX,originalImage->sizeY);
+
+    int averageRed, averageGreen, averageBlue;
+    int xIndex, yIndex;
+
+    Pixel newPixel = {0,0,0};
+/*    float kernel[3][3] = {
+        {-1,-2,-1},
+        {-2,12,-2},
+        {-1,-2,-1}
+    };*/
+
+    float kernel[3][3] = {
+        {0,-1,0},
+        {-1,5,-1},
+        {0,-1,0}
+    };
+
+    for(int x = 0; x < originalImage->sizeX; x++)
+    {
+        for(int y = 0; y < originalImage->sizeY; y++)
+        {
+            averageRed = 0;
+            averageGreen = 0;
+            averageBlue = 0;
+
+            if(x < 0 || x >= originalImage->sizeX)
+            {
+                xIndex = x;
+            }
+            if(y < 0 || y >= originalImage->sizeY)
+            {
+                yIndex = y;
+            }
+
+            for(int i = -1; i <= 1; i++)
+            {
+                for(int j = -1; j <= 1; j++)
+                {
+                    xIndex = (x+i);
+                    yIndex = (y+j);
+                    if(xIndex < 0 || xIndex >= originalImage->sizeX)
+                    {
+                        xIndex = x;
+                    }
+                    if(yIndex < 0 || yIndex >= originalImage->sizeY)
+                    {
+                        yIndex = y;
+                    }
+                    averageRed += originalImage->image[xIndex][yIndex].r*kernel[1+i][1+j];
+                    averageGreen += originalImage->image[xIndex][yIndex].v*kernel[1+i][1+j];
+                    averageBlue += originalImage->image[xIndex][yIndex].b*kernel[1+i][1+j];
+                }
+            }
+
+            newPixel.r = averageRed;
+            newPixel.v = averageGreen;
+            newPixel.b = averageBlue;
+
+            //printf("%d %d %d | %d %d %d\n",averageRed, averageGreen, averageBlue, newPixel.r, newPixel.v ,newPixel.b);
+
+            //printf("X,Y: %d %d, Source: %X, Dest: %X\n",x,y,image->image[x][y], newImage->image[x][y]);
+            newImage->image[x][y] = newPixel;
+        }
+    }
+
+    saveImage(newImage, "images/highPass.ppm");
     destructImage(originalImage);
     destructImage(newImage);
 }

@@ -76,7 +76,7 @@ int main()
     */
     // Test d'effets sur images
     char fichier[20] = "base.ppm";
-    // /*
+    /*
     redChannel(fichier);
     greenChannel(fichier);
     blueChannel(fichier);
@@ -86,9 +86,10 @@ int main()
     negative(fichier);
     threshold(fichier);
     thresholdOtsu(fichier);
-     // */
     pixelate(fichier);
+    lowPass(fichier);
     // */
+    highPass(fichier);
 
     // Liberation de la memoire
     /*
