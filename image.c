@@ -6,31 +6,33 @@
 
 Image* createImage(int x, int y)
 {
-    Image *image = (Image*)malloc(sizeof(Image));
-
-    image->sizeX = x;
-    image->sizeY = y;
-
-    image->image = (Pixel **)malloc(sizeof(Pixel *) * image->sizeX);
-    for (int i=0; i<image->sizeX; i++)
-    {
-        image->image[i] = (Pixel *)malloc(sizeof(Pixel) * image->sizeY);
+    if(x <= 0 || y <= 0){
+        printf("Erreur dans les parametres pour creer l'image\n");
+        return NULL;
     }
 
-    return image;
+    Image *allocatedImage = (Image*)malloc(sizeof(Image));
 
+    allocatedImage->sizeX = x; // Longueur de x = nombre de colonnes
+    allocatedImage->sizeY = y; // Longueur de y = nombre de lignes
+
+    allocatedImage->image = (Pixel **)malloc(sizeof(Pixel *) * allocatedImage->sizeX); //Alloue la place pour les colonnes de pixels (1 case = 1 colonne de pixel)
+    for (int i=0; i<allocatedImage->sizeX; i++)
+    {
+        allocatedImage->image[i] = (Pixel *)malloc(sizeof(Pixel) * allocatedImage->sizeY); // Alloue les lignes de pixels
+    }
+
+    return allocatedImage;
 }
 
 void destructImage(Image* image)
 {
-
     for (int i=0; i<image->sizeX; i++)
     {
         free(image->image[i]);
     }
     free(image->image);
     free(image);
-
 }
 
 void saveImage(Image *pxArray, char nomFichier[])
@@ -41,9 +43,6 @@ void saveImage(Image *pxArray, char nomFichier[])
     fprintf(image,"P3\n");
     fprintf(image,"%d %d\n", pxArray->sizeX, pxArray->sizeY);
     fprintf(image,"255\n");
-    //fprintf(stdout,"P3\n");
-    //fprintf(stdout,"%d %d\n", pxArray->sizeX, pxArray->sizeY);
-    //fprintf(stdout,"255\n");
 
     //Actual image
     for(int x = 0; x < pxArray->sizeX; x++)
@@ -66,6 +65,11 @@ Image* loadImage(char nomFichier[])
     printf("Execution loadImage()\n");
 
     FILE *image = fopen(nomFichier,"r");
+    if(image == NULL)
+    {
+        perror("Erreur: l'image n'existe pas");
+        exit(NULL);
+    }
     char headerParam[5];
     int x,y,colorDepth;
     int r,v,b;
@@ -92,6 +96,7 @@ Image* loadImage(char nomFichier[])
         }
     }
 
+    fclose(image);
     return imageReturn;
 }
 
@@ -435,35 +440,113 @@ void thresholdOtsu(char nomFichier[])
 
 void pixelate(char nomFichier[])
 {
-    Image* image = loadImage(nomFichier);
-    Image* newImage = createImage(image->sizeX,image->sizeY);
+
+    Image *originalImage = loadImage(nomFichier);
+    Image *newImage = createImage(originalImage->sizeX,originalImage->sizeY);
+
+    saveImage(originalImage,"images/originalImage.ppm");
+    saveImage(newImage,"images/newImage.ppm");
+    int averageRed=0, averageGreen=0, averageBlue=0;
+
+    /*printf("%d %d\n",originalImage->sizeX,originalImage->sizeY );
+    printf("%p, %p\n", originalImage, newImage);
+    printf("%p, %p\n", originalImage->image,newImage->image);
+    printf("%p, %p\n", originalImage->image[0][0],newImage->image[0][0]);
+    printf("%p, %p\n", originalImage->image[1][1],newImage->image[1][1]);
+    printf("%p, %p\n", originalImage->image[2][2],newImage->image[2][2]);*/
+
+    /*Pixel test = {255,154,98};
+    originalImage->image[1][1] = test;
+    printf("%d %d %d\n", originalImage->image[1][1].r,originalImage->image[1][1].v,originalImage->image[1][1].b);
+    printf("%d %d %d\n", newImage->image[1][1].r,newImage->image[0][0].v,newImage->image[0][0].b);
+    */
+
+    Pixel currentPixel = {255,0,0};
+    int xIndex=0,yIndex=0;
+
+    for(int x = 1; x < originalImage->sizeX; x+=3)
+    {
+        for(int y = 1; y < originalImage->sizeY; y+=3)
+        {
+
+            currentPixel = originalImage->image[x][y];
+
+            for(int i = -1; i <= 1; i++)
+            {
+                for(int j = -1; j <= 1; j++)
+                {
+                    xIndex = (x+i);
+                    yIndex = (y+j);
+                    if(xIndex < 0 || xIndex >= originalImage->sizeX)
+                    {
+                        xIndex = x;
+                    }
+                    if(yIndex < 0 || yIndex >= originalImage->sizeY)
+                    {
+                        yIndex = y;
+                    }
+                    newImage->image[xIndex][yIndex] = currentPixel;
+                }
+            }
+            //newImage->image[x][y] = currentPixel;
+        }
+        //saveImage(newImage,"images/newImage.ppm");
+    }
+
+    saveImage(newImage, "images/pixelated.ppm");
+    destructImage(originalImage);
+    destructImage(newImage);
+}
+
+void lowPass(char nomFichier[])
+{
+    Image *originalImage = loadImage(nomFichier);
+    Image *newImage = createImage(originalImage->sizeX,originalImage->sizeY);
+
+    saveImage(originalImage,"images/originalImage.ppm");
+    saveImage(newImage,"images/newImage.ppm");
     int averageRed, averageGreen, averageBlue;
+
+    printf("%d %d\n",originalImage->sizeX,originalImage->sizeY );
+    printf("%p, %p\n", originalImage, newImage);
+    printf("%p, %p\n", originalImage->image,newImage->image);
+    printf("%p, %p\n", originalImage->image[0][0],newImage->image[0][0]);
+    printf("%p, %p\n", originalImage->image[1][1],newImage->image[1][1]);
+    printf("%p, %p\n", originalImage->image[2][2],newImage->image[2][2]);
+
+    Pixel test = {255,154,98};
+    originalImage->image[1][1] = test;
+    printf("%d %d %d\n", originalImage->image[1][1].r,originalImage->image[1][1].v,originalImage->image[1][1].b);
+    printf("%d %d %d\n", newImage->image[1][1].r,newImage->image[0][0].v,newImage->image[0][0].b);
 
     Pixel newPixel = {0,0,0};
     int xIndex,yIndex;
 
-    for(int x = 0; x < image->sizeX; x++)
+    for(int x = 0; x < originalImage->sizeX; x++)
     {
-        for(int y = 0; y < image->sizeY; y++)
+        for(int y = 0; y < originalImage->sizeY; y++)
         {
             averageRed = 0;
             averageGreen = 0;
             averageBlue = 0;
 
-            for(int i = -1; i <= 1; i++){
-                for(int j = -1; j <= 1; j++){
-
-                    xIndex = (x+i)%image->sizeX;
-                    yIndex = (y+j)%image->sizeY;
-                    if(xIndex < 0){
-                        xIndex = image->sizeX-1;
+            for(int i = -1; i <= 1; i++)
+            {
+                for(int j = -1; j <= 1; j++)
+                {
+                    xIndex = (x+i);
+                    yIndex = (y+j);
+                    if(xIndex < 0 || xIndex >= originalImage->sizeX)
+                    {
+                        xIndex = x;
                     }
-                    if(yIndex < 0){
-                        yIndex = image->sizeY-1;
+                    if(yIndex < 0 || yIndex >= originalImage->sizeY)
+                    {
+                        yIndex = y;
                     }
-                    averageRed += image->image[xIndex][yIndex].r;
-                    averageGreen += image->image[xIndex][yIndex].v;
-                    averageBlue += image->image[xIndex][yIndex].b;
+                    averageRed += originalImage->image[xIndex][yIndex].r;
+                    averageGreen += originalImage->image[xIndex][yIndex].v;
+                    averageBlue += originalImage->image[xIndex][yIndex].b;
                 }
             }
 
@@ -473,74 +556,50 @@ void pixelate(char nomFichier[])
 
             //printf("%d %d %d | %d %d %d\n",averageRed, averageGreen, averageBlue, newPixel.r, newPixel.v ,newPixel.b);
 
+            //printf("X,Y: %d %d, Source: %X, Dest: %X\n",x,y,image->image[x][y], newImage->image[x][y]);
             newImage->image[x][y] = newPixel;
         }
     }
 
-    saveImage(newImage, "images/pixelated.ppm");
-    destructImage(image);
+    saveImage(newImage, "images/lowPass.ppm");
+    destructImage(originalImage);
     destructImage(newImage);
 }
 
-void quintuplage(char nomFichier[])
-{
-    Image* image = loadImage(nomFichier);
-    int averageRed = 0, averageGreen = 0, averageBlue = 0;
+/*
+if(x+1 == image->sizeX || y+1 == image->sizeY) continue;
+averageRed = ((image->image[x-1][y-1].r+
+               image->image[x-1][y].r+
+               image->image[x-1][y+1].r+
+               image->image[x][y-1].r+
+               image->image[x][y].r+
+               image->image[x][y+1].r+
+               image->image[x+1][y-1].r+
+               image->image[x+1][y].r+
+               image->image[x+1][y+1].r)/9);
 
-    Pixel newPixel = {0,0,0};
+averageGreen = ((image->image[x-1][y-1].v+
+                 image->image[x-1][y].v+
+                 image->image[x-1][y+1].v+
+                 image->image[x][y-1].v+
+                 image->image[x][y].v+
+                 image->image[x][y+1].v+
+                 image->image[x+1][y-1].v+
+                 image->image[x+1][y].v+
+                 image->image[x+1][y+1].v)/9);
 
-    for(int x = 1; x < image->sizeX; x += 3)
-    {
-        for(int y = 1; y < image->sizeY; y += 3)
-        {
-            if(x+1 == image->sizeX || y+1 == image->sizeY) continue;
-            averageRed = ((image->image[x-1][y-1].r+
-                           image->image[x-1][y].r+
-                           image->image[x-1][y+1].r+
-                           image->image[x][y-1].r+
-                           image->image[x][y].r+
-                           image->image[x][y+1].r+
-                           image->image[x+1][y-1].r+
-                           image->image[x+1][y].r+
-                           image->image[x+1][y+1].r)/9);
+averageBlue = ((image->image[x-1][y-1].b+
+                image->image[x-1][y].b+
+                image->image[x-1][y+1].b+
+                image->image[x][y-1].b+
+                image->image[x][y].b+
+                image->image[x][y+1].b+
+                image->image[x+1][y-1].b+
+                image->image[x+1][y].b+
+                image->image[x+1][y+1].b)/9);
 
-            averageGreen = ((image->image[x-1][y-1].v+
-                             image->image[x-1][y].v+
-                             image->image[x-1][y+1].v+
-                             image->image[x][y-1].v+
-                             image->image[x][y].v+
-                             image->image[x][y+1].v+
-                             image->image[x+1][y-1].v+
-                             image->image[x+1][y].v+
-                             image->image[x+1][y+1].v)/9);
+newPixel.r = averageRed;
+newPixel.v = averageGreen;
+newPixel.b = averageBlue;
 
-            averageBlue = ((image->image[x-1][y-1].b+
-                            image->image[x-1][y].b+
-                            image->image[x-1][y+1].b+
-                            image->image[x][y-1].b+
-                            image->image[x][y].b+
-                            image->image[x][y+1].b+
-                            image->image[x+1][y-1].b+
-                            image->image[x+1][y].b+
-                            image->image[x+1][y+1].b)/9);
-
-            newPixel.r = averageRed;
-            newPixel.v = averageGreen;
-            newPixel.b = averageBlue;
-
-            image->image[x-1][y-1] = newPixel;
-            image->image[x-1][y] = newPixel;
-            image->image[x-1][y+1] = newPixel;
-            image->image[x][y-1] = newPixel;
-            image->image[x][y] = newPixel;
-            image->image[x][y+1] = newPixel;
-            image->image[x+1][y-1] = newPixel;
-            image->image[x+1][y] = newPixel;
-            image->image[x+1][y+1] = newPixel;
-        }
-    }
-
-    saveImage(image, "images/quintuple.ppm");
-    destructImage(image);
-}
-
+*/

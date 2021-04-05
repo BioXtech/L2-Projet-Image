@@ -75,19 +75,20 @@ int main()
 
     */
     // Test d'effets sur images
-    /*
-    redChannel("base.ppm");
-    greenChannel("base.ppm");
-    blueChannel("base.ppm");
-    greyAverage("base.ppm");
-    greyMax("base.ppm");
-    sepia("base.ppm");
-    negative("base.ppm");
-    threshold("base.ppm");
-    thresholdOtsu("base.ppm");
-    */
-    pixelate("base.ppm");
-    //quintuplage("base.ppm");
+    char fichier[20] = "base.ppm";
+    // /*
+    redChannel(fichier);
+    greenChannel(fichier);
+    blueChannel(fichier);
+    greyAverage(fichier);
+    greyMax(fichier);
+    sepia(fichier);
+    negative(fichier);
+    threshold(fichier);
+    thresholdOtsu(fichier);
+     // */
+    pixelate(fichier);
+    // */
 
     // Liberation de la memoire
     /*

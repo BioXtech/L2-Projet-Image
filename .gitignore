@@ -63,3 +63,5 @@ results/
 *.depend
 *.cbp
 *.layout
+*.jpg
+*.webp

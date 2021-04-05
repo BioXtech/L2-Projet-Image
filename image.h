@@ -37,5 +37,7 @@ void threshold(char nomFichier[]); //Methode artisanale
 void thresholdOtsu(char nomFichier[]); //Methode d'Otsu
 
 void pixelate(char nomFichier[]);
-void quintuplage(char nomFichier[]);
+void lowPass(char nomFichier[]);
+//void highPass(char nomFichier[])
+
 #endif // IMAGE_H_INCLUDED
