@@ -1,3 +1,9 @@
+/*
+* Projet de programmation en C
+* Binome constitue de Doan Duc-Thong et Porro Guillaume
+* L2 Informatique, Université de Poitiers, 2020-2021
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -667,41 +673,3 @@ void highPass(char nomFichier[])
     destructImage(originalImage);
     destructImage(newImage);
 }
-
-/*
-if(x+1 == image->sizeX || y+1 == image->sizeY) continue;
-averageRed = ((image->image[x-1][y-1].r+
-               image->image[x-1][y].r+
-               image->image[x-1][y+1].r+
-               image->image[x][y-1].r+
-               image->image[x][y].r+
-               image->image[x][y+1].r+
-               image->image[x+1][y-1].r+
-               image->image[x+1][y].r+
-               image->image[x+1][y+1].r)/9);
-
-averageGreen = ((image->image[x-1][y-1].v+
-                 image->image[x-1][y].v+
-                 image->image[x-1][y+1].v+
-                 image->image[x][y-1].v+
-                 image->image[x][y].v+
-                 image->image[x][y+1].v+
-                 image->image[x+1][y-1].v+
-                 image->image[x+1][y].v+
-                 image->image[x+1][y+1].v)/9);
-
-averageBlue = ((image->image[x-1][y-1].b+
-                image->image[x-1][y].b+
-                image->image[x-1][y+1].b+
-                image->image[x][y-1].b+
-                image->image[x][y].b+
-                image->image[x][y+1].b+
-                image->image[x+1][y-1].b+
-                image->image[x+1][y].b+
-                image->image[x+1][y+1].b)/9);
-
-newPixel.r = averageRed;
-newPixel.v = averageGreen;
-newPixel.b = averageBlue;
-
-*/

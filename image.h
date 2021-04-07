@@ -1,3 +1,9 @@
+/*
+* Projet de programmation en C
+* Binome constitue de Doan Duc-Thong et Porro Guillaume
+* L2 Informatique, Université de Poitiers, 2020-2021
+*/
+
 #ifndef IMAGE_H_INCLUDED
 #define IMAGE_H_INCLUDED
 
@@ -16,6 +22,7 @@ typedef struct
     int sizeX;
     int sizeY;
 } Image;
+
 
 Image* createImage(int x, int y);
 void destructImage(Image* image);

@@ -1,7 +1,7 @@
 /*
 * Projet de programmation en C
 * Binome constitue de Doan Duc-Thong et Porro Guillaume
-*
+* L2 Informatique, Université de Poitiers, 2020-2021
 */
 
 #include <stdio.h>
@@ -10,17 +10,24 @@
 #include "image.h"
 #include "interface.h"
 
+
+
+int main(int argc, char* argv[])
+{
+
+    printf("Programme de manipulation d'image en C\n");
+    argParse(argc,argv);
+
+    return 0;
+}
+/*
 int random(int min, int max)
 {
     return (rand()% (max-min+1))+min;
 }
-
-int main()
-{
-    // Initialisation du random
+// Initialisation du random
     srand(time (NULL));
-
-    // Initialisation de constante de pixel
+// Initialisation de constante de pixel
     Pixel rouge = {255,0,0};
     Pixel vert = {0,255,0};
     Pixel bleu = {0,0,255};
@@ -73,7 +80,7 @@ int main()
     }
     saveImage(imageChargee,"images/apres.ppm");
 
-    */
+
     // Test d'effets sur images
     char fichier[20] = "cell.ppm";
     // /*
@@ -88,7 +95,7 @@ int main()
     thresholdOtsu(fichier);
     pixelate(fichier);
     lowPass(fichier);
-    // */
+    //
     gaussianBlur(fichier);
     highPass(fichier);
 
@@ -97,7 +104,4 @@ int main()
     destructImage(image1);
     destructImage(imageAModifier);
     destructImage(imageChargee);
-    */
-
-    return 0;
-}
+*/
