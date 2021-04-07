@@ -535,6 +535,65 @@ void lowPass(char nomFichier[])
     destructImage(newImage);
 }
 
+void gaussianBlur(char nomFichier[])
+{
+    Image *originalImage = loadImage(nomFichier);
+    Image *newImage = createImage(originalImage->sizeX,originalImage->sizeY);
+
+    int averageRed, averageGreen, averageBlue;
+
+    Pixel newPixel = {0,0,0};
+    float kernel[3][3] = {
+        {1,4,1},
+        {4,8,4},
+        {1,4,1}
+    };
+    int xIndex,yIndex;
+
+    for(int x = 0; x < originalImage->sizeX; x++)
+    {
+        for(int y = 0; y < originalImage->sizeY; y++)
+        {
+            averageRed = 0;
+            averageGreen = 0;
+            averageBlue = 0;
+
+            for(int i = -1; i <= 1; i++)
+            {
+                for(int j = -1; j <= 1; j++)
+                {
+                    xIndex = (x+i);
+                    yIndex = (y+j);
+                    if(xIndex < 0 || xIndex >= originalImage->sizeX)
+                    {
+                        xIndex = x;
+                    }
+                    if(yIndex < 0 || yIndex >= originalImage->sizeY)
+                    {
+                        yIndex = y;
+                    }
+                    averageRed += originalImage->image[xIndex][yIndex].r*kernel[1+i][1+j];
+                    averageGreen += originalImage->image[xIndex][yIndex].v*kernel[1+i][1+j];
+                    averageBlue += originalImage->image[xIndex][yIndex].b*kernel[1+i][1+j];
+                }
+            }
+
+            newPixel.r = averageRed/28;
+            newPixel.v = averageGreen/28;
+            newPixel.b = averageBlue/28;
+
+            //printf("%d %d %d | %d %d %d\n",averageRed, averageGreen, averageBlue, newPixel.r, newPixel.v ,newPixel.b);
+
+            //printf("X,Y: %d %d, Source: %X, Dest: %X\n",x,y,image->image[x][y], newImage->image[x][y]);
+            newImage->image[x][y] = newPixel;
+        }
+    }
+
+    saveImage(newImage, "images/gaussianBlur.ppm");
+    destructImage(originalImage);
+    destructImage(newImage);
+}
+
 void highPass(char nomFichier[])
 {
     Image *originalImage = loadImage(nomFichier);

@@ -75,8 +75,8 @@ int main()
 
     */
     // Test d'effets sur images
-    char fichier[20] = "base.ppm";
-    /*
+    char fichier[20] = "cell.ppm";
+    // /*
     redChannel(fichier);
     greenChannel(fichier);
     blueChannel(fichier);
@@ -89,6 +89,7 @@ int main()
     pixelate(fichier);
     lowPass(fichier);
     // */
+    gaussianBlur(fichier);
     highPass(fichier);
 
     // Liberation de la memoire
