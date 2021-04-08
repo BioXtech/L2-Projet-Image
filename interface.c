@@ -50,8 +50,6 @@ void argParse(int argc, char *argv[])
         "Filtre passe-haut"
     };
 
-    printf("Argc: %d, Argc: %s, %s, %s\n", argc, argv[0],argv[1], argv[2]);
-    printf("%d\n",strtol(argv[1],NULL,10));
     // Cas sans arguments
     if(argc == 1)
     {
@@ -89,7 +87,7 @@ int getUserInput(char nomFichier[], char *nomFiltres[])
     //Selection filtre
     do
     {
-        printf("Veuillez specifier quel filtre voulez-vous utiliser (h pour aide) : ");
+        printf("Veuillez specifier quel filtre voulez-vous utiliser: ");
         fflush(stdin);
         scanf("%d",&numFiltre);
         if( numFiltre >= 0 && numFiltre < NOMBRE_FILTRES)
@@ -98,7 +96,7 @@ int getUserInput(char nomFichier[], char *nomFiltres[])
         }
         else
         {
-            if(numFiltre != 71)printf("Le nombre entre n'est pas valide\n"); // Cas particulier de h
+            printf("Le nombre entre n'est pas valide\n");
             printf("Liste des filtres\n");
             for(int i = 0; i < NOMBRE_FILTRES; i++)
             {
