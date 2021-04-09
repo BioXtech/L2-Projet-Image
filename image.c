@@ -57,10 +57,8 @@ void saveImage(Image *pxArray, char nomFichier[])
         for(int x = 0; x < pxArray->sizeX; x++)
         {
             fprintf(image, "%d %d %d ", pxArray->image[x][y].r,pxArray->image[x][y].v,pxArray->image[x][y].b);
-            //fprintf(stdout, "%d %d %d ", pxArray->image[x][y].r,pxArray->image[x][y].v,pxArray->image[x][y].b);
         }
         fprintf(image,"\n");
-        //fprintf(stdout,"\n");
     }
 
     fclose(image);
@@ -121,7 +119,7 @@ void redChannel(char nomFichier[])
         }
     }
 
-    saveImage(image, "images/red.ppm");
+    saveImage(image, "red.ppm");
     destructImage(image);
 }
 
@@ -138,7 +136,7 @@ void greenChannel(char nomFichier[])
         }
     }
 
-    saveImage(image, "images/green.ppm");
+    saveImage(image, "green.ppm");
     destructImage(image);
 }
 
@@ -155,14 +153,14 @@ void blueChannel(char nomFichier[])
         }
     }
 
-    saveImage(image, "images/blue.ppm");
+    saveImage(image, "blue.ppm");
     destructImage(image);
 }
 
 void greyAverage(char nomFichier[])
 {
     Image* image = loadImage(nomFichier);
-    int average = 0;
+    Octet average = 0;
 
     for(int x = 0; x < image->sizeX; x++)
     {
@@ -176,15 +174,15 @@ void greyAverage(char nomFichier[])
         }
     }
 
-    saveImage(image, "images/greyAverage.ppm");
+    saveImage(image, "greyAverage.ppm");
     destructImage(image);
 }
 
 void greyMax(char nomFichier[])
 {
     Image* image = loadImage(nomFichier);
-    int max = 0;
-    int r,v,b;
+    Octet max = 0;
+    Octet r,v,b;
 
     for(int x = 0; x < image->sizeX; x++)
     {
@@ -213,7 +211,7 @@ void greyMax(char nomFichier[])
         }
     }
 
-    saveImage(image, "images/greyMax.ppm");
+    saveImage(image, "greyMax.ppm");
     destructImage(image);
 }
 
@@ -251,14 +249,14 @@ void sepia(char nomFichier[])
         }
     }
 
-    saveImage(image, "images/sepia.ppm");
+    saveImage(image, "sepia.ppm");
     destructImage(image);
 }
 
 void negative(char nomFichier[])
 {
     Image* image = loadImage(nomFichier);
-    int newR,newV,newB;
+    Octet newR,newV,newB;
 
     for(int x = 0; x < image->sizeX; x++)
     {
@@ -274,14 +272,14 @@ void negative(char nomFichier[])
         }
     }
 
-    saveImage(image, "images/negative.ppm");
+    saveImage(image, "negative.ppm");
     destructImage(image);
 }
 
 void threshold(char nomFichier[])
 {
     Image* image = loadImage(nomFichier);
-    int average = 0;
+    Octet average = 0;
 
     Pixel noir = {0,0,0}, blanc = {255,255,255};
 
@@ -302,7 +300,7 @@ void threshold(char nomFichier[])
         }
     }
 
-    saveImage(image, "images/threshold.ppm");
+    saveImage(image, "threshold.ppm");
     destructImage(image);
 }
 
@@ -335,7 +333,7 @@ void thresholdOtsu(char nomFichier[])
     for(i = 0; i <= 255; i++)
     {
         probaPixel[i] = (double)histogramme[i]/nbPixel;
-        sum = sum + probaPixel[i];
+        //sum = sum + probaPixel[i];
         //Drawing graphics
         /*for(int j = 0; j < probaPixel[i]*10000; j++){
             printf("*");
@@ -442,7 +440,7 @@ void thresholdOtsu(char nomFichier[])
         }
     }
 
-    saveImage(image, "images/thresholdOtsu.ppm");
+    saveImage(image, "thresholdOtsu.ppm");
     destructImage(image);
 }
 
@@ -482,7 +480,7 @@ void pixelate(char nomFichier[])
         }
     }
 
-    saveImage(newImage, "images/pixelated.ppm");
+    saveImage(newImage, "pixelated.ppm");
     destructImage(originalImage);
     destructImage(newImage);
 }
@@ -529,14 +527,11 @@ void lowPass(char nomFichier[])
             newPixel.v = averageGreen/9;
             newPixel.b = averageBlue/9;
 
-            //printf("%d %d %d | %d %d %d\n",averageRed, averageGreen, averageBlue, newPixel.r, newPixel.v ,newPixel.b);
-
-            //printf("X,Y: %d %d, Source: %X, Dest: %X\n",x,y,image->image[x][y], newImage->image[x][y]);
             newImage->image[x][y] = newPixel;
         }
     }
 
-    saveImage(newImage, "images/lowPass.ppm");
+    saveImage(newImage, "lowPass.ppm");
     destructImage(originalImage);
     destructImage(newImage);
 }
@@ -588,14 +583,11 @@ void gaussianBlur(char nomFichier[])
             newPixel.v = averageGreen/28;
             newPixel.b = averageBlue/28;
 
-            //printf("%d %d %d | %d %d %d\n",averageRed, averageGreen, averageBlue, newPixel.r, newPixel.v ,newPixel.b);
-
-            //printf("X,Y: %d %d, Source: %X, Dest: %X\n",x,y,image->image[x][y], newImage->image[x][y]);
             newImage->image[x][y] = newPixel;
         }
     }
 
-    saveImage(newImage, "images/gaussianBlur.ppm");
+    saveImage(newImage, "gaussianBlur.ppm");
     destructImage(originalImage);
     destructImage(newImage);
 }
@@ -609,7 +601,7 @@ void highPass(char nomFichier[])
     int xIndex, yIndex;
 
     Pixel newPixel = {0,0,0};
-/*    float kernel[3][3] = {
+    /*float kernel[3][3] = {
         {-1,-2,-1},
         {-2,12,-2},
         {-1,-2,-1}
@@ -628,15 +620,6 @@ void highPass(char nomFichier[])
             averageRed = 0;
             averageGreen = 0;
             averageBlue = 0;
-
-            if(x < 0 || x >= originalImage->sizeX)
-            {
-                xIndex = x;
-            }
-            if(y < 0 || y >= originalImage->sizeY)
-            {
-                yIndex = y;
-            }
 
             for(int i = -1; i <= 1; i++)
             {
@@ -658,18 +641,18 @@ void highPass(char nomFichier[])
                 }
             }
 
+            if(averageRed > 255) averageRed = 255;
+            if(averageGreen > 255) averageGreen = 255;
+            if(averageBlue > 255) averageBlue = 255;
             newPixel.r = averageRed;
             newPixel.v = averageGreen;
             newPixel.b = averageBlue;
 
-            //printf("%d %d %d | %d %d %d\n",averageRed, averageGreen, averageBlue, newPixel.r, newPixel.v ,newPixel.b);
-
-            //printf("X,Y: %d %d, Source: %X, Dest: %X\n",x,y,image->image[x][y], newImage->image[x][y]);
             newImage->image[x][y] = newPixel;
         }
     }
 
-    saveImage(newImage, "images/highPass.ppm");
+    saveImage(newImage, "highPass.ppm");
     destructImage(originalImage);
     destructImage(newImage);
 }

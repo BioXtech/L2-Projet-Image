@@ -40,7 +40,7 @@ void greyMax(char nomFichier[]);
 void sepia(char nomFichier[]);
 
 void negative(char nomFichier[]);
-void threshold(char nomFichier[]); //Methode artisanale
+void threshold(char nomFichier[]); //Methode empirique
 void thresholdOtsu(char nomFichier[]); //Methode d'Otsu
 
 void pixelate(char nomFichier[]);

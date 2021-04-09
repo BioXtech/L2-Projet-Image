@@ -53,12 +53,12 @@ void argParse(int argc, char *argv[])
     // Cas sans arguments
     if(argc == 1)
     {
-        int numFiltre = getUserInput(nomFichier, nomFiltres);
+        numFiltre = getUserInput(nomFichier, nomFiltres);
         (*nomFonctions[numFiltre])(nomFichier);
     }
     else if(argc == 3 && strtol(argv[1],NULL,10) >= 0 && strtol(argv[1],NULL,10) < NOMBRE_FILTRES) //Cas avec 2 arguments passes
     {
-        int numFiltre = strtol(argv[1], NULL, 10);
+        numFiltre = strtol(argv[1], NULL, 10);
         (*nomFonctions[numFiltre])(argv[2]);
     }
     else if(argc == 2 && (!strcmp(argv[1],"-h") || !strcmp(argv[1],"--help"))) //Cas de l'aide
